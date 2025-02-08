@@ -1,0 +1,98 @@
+1]Using count with Unique Bucket Names
+This method appends a random suffix to each bucket name.
+main.tf
+provider "aws" {
+  region = "us-east-1"  # Change as needed
+}
+
+# Generate unique suffixes
+resource "random_id" "suffix" {
+  count       = length(var.bucket_names)
+  byte_length = 4
+}
+
+# Create multiple S3 buckets with unique names
+resource "aws_s3_bucket" "buckets" {
+  count  = length(var.bucket_names)
+  bucket = "${var.bucket_names[count.index]}-${random_id.suffix[count.index].hex}"
+}
+
+# Output the created bucket names
+output "s3_buckets" {
+  value = aws_s3_bucket.buckets[*].bucket
+}
+
+...
+variables.tf
+variable "bucket_names" {
+  type    = list(string)
+  default = []
+}
+
+...
+terraform.tfvars
+bucket_names = [
+  "my-bucket-1",
+  "my-bucket-2",
+  "my-bucket-3",
+  "my-bucket-4",
+  "my-bucket-5",
+  "my-bucket-6",
+  "my-bucket-7",
+  "my-bucket-8",
+  "my-bucket-9",
+  "my-bucket-10"
+]
+
+
+#terraform init
+#terraform plan
+#terraform apply --auto-approve
+
+
+
+2]Using for_each with Unique Bucket Names
+This approach ensures that each bucket gets a unique name using random_id.
+
+main.tf
+provider "aws" {
+  region = "us-east-1"
+}
+
+# Generate unique suffixes
+resource "random_id" "suffixes" {
+  for_each    = toset(var.bucket_names)
+  byte_length = 4
+}
+
+# Create multiple S3 buckets with unique names
+resource "aws_s3_bucket" "buckets" {
+  for_each = var.bucket_names_map
+
+  bucket = "${each.key}-${random_id.suffixes[each.key].hex}"
+}
+
+# Define a map for iteration
+variable "bucket_names_map" {
+  default = {
+    "my-bucket-1"  = true,
+    "my-bucket-2"  = true,
+    "my-bucket-3"  = true,
+    "my-bucket-4"  = true,
+    "my-bucket-5"  = true,
+    "my-bucket-6"  = true,
+    "my-bucket-7"  = true,
+    "my-bucket-8"  = true,
+    "my-bucket-9"  = true,
+    "my-bucket-10" = true
+  }
+}
+
+# Output the created bucket names
+output "s3_buckets" {
+  value = [for bucket in aws_s3_bucket.buckets : bucket.bucket]
+}
+
+#terraform init
+#terarform plan
+#terarform apply --auto-approve
