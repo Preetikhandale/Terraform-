@@ -9,3 +9,4 @@ variable ami {
 
 variable "key_name" {
   default = "eks-key"
+}
