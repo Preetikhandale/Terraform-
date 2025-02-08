@@ -1,0 +1,119 @@
+1]Terraform Code (Creating Users One by One)
+Create a file named main.tf and add the following:
+provider "aws" {
+  region = "us-east-1"  # Change as needed
+}
+
+# Create individual IAM users
+resource "aws_iam_user" "user1" {
+  name = "user1"
+}
+
+resource "aws_iam_user" "user2" {
+  name = "user2"
+}
+
+resource "aws_iam_user" "user3" {
+  name = "user3"
+}
+
+resource "aws_iam_user" "user4" {
+  name = "user4"
+}
+
+resource "aws_iam_user" "user5" {
+  name = "user5"
+}
+
+resource "aws_iam_user" "user6" {
+  name = "user6"
+}
+
+resource "aws_iam_user" "user7" {
+  name = "user7"
+}
+
+resource "aws_iam_user" "user8" {
+  name = "user8"
+}
+
+resource "aws_iam_user" "user9" {
+  name = "user9"
+}
+
+resource "aws_iam_user" "user10" {
+  name = "user10"
+}
+
+# Output the created users
+output "iam_users" {
+  value = [
+    aws_iam_user.user1.name,
+    aws_iam_user.user2.name,
+    aws_iam_user.user3.name,
+    aws_iam_user.user4.name,
+    aws_iam_user.user5.name,
+    aws_iam_user.user6.name,
+    aws_iam_user.user7.name,
+    aws_iam_user.user8.name,
+    aws_iam_user.user9.name,
+    aws_iam_user.user10.name
+  ]
+}
+
+2]At same time
+Create a file named main.tf and add the following:
+provider "aws" {
+  region = "us-east-1"  # Change as needed
+}
+
+# List of user names
+variable "user_names" {
+  default = ["user1", "user2", "user3", "user4", "user5", "user6", "user7", "user8", "user9", "user10"]
+}
+
+# Create IAM users
+resource "aws_iam_user" "users" {
+  count = length(var.user_names)
+
+  name = var.user_names[count.index]
+}
+
+# Output the created users
+output "iam_users" {
+  value = aws_iam_user.users[*].name
+}
+
+3]Alternative: Using for_each
+You can also use for_each instead of count:
+  1)Create a main.tf File
+    provider "aws" {
+  region = "us-east-1"  # Change as needed
+}
+
+# Load the user list from variables.tf
+resource "aws_iam_user" "users" {
+  for_each = toset(var.user_names)
+
+  name = each.value
+}
+
+# Output the created users
+output "iam_users" {
+  value = [for user in aws_iam_user.users : user.name]
+}
+
+  2)Create a variables.tf File
+    variable "user_names" {
+  type    = list(string)
+  default = []
+}
+
+  3)Create a terraform.tfvars File
+    user_names = ["user1", "user2", "user3", "user4", "user5", "user6", "user7", "user8", "user9", "user10"]
+
+
+
+#terraform init
+#terraform plan
+#terraform apply --auto-approve
