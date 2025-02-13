@@ -1,0 +1,1 @@
+terraform import aws_instance.preeti instance_id
