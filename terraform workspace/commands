@@ -1,0 +1,8 @@
+Commands to Manage Workspaces:
+1)List Workspaces:       terraform workspace list
+
+2)Create a Workspace:    terraform workspace new <workspace_name>
+
+3)Switch to a Workspace: terraform workspace select <workspace_name>
+
+4)Delete a Workspace:    terraform workspace delete <workspace_name>
